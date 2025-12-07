@@ -13,27 +13,56 @@
         
         body { background-color: #ffffff; padding-bottom: 100px; color: #333; -webkit-tap-highlight-color: transparent; }
 
-        /* HEADER FIXO */
+        /* --- HEADER OTIMIZADO (GPU) --- */
         .header-container { 
             background: white; 
             text-align: center; 
-            padding-bottom: 15px; 
             box-shadow: 0 1px 5px rgba(0,0,0,0.05); 
-            position: sticky; /* Faz o header fixar */
+            
+            /* Fixar no topo */
+            position: fixed; 
             top: 0; 
-            z-index: 100; /* Garante que fique acima de tudo */
+            left: 0;
+            width: 100%;
+            z-index: 999; 
+
+            /* Animação suave usando placa de vídeo do celular */
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
         }
-        
+
+        /* Classe que esconde o header movendo ele para cima */
+        .header-hidden {
+            transform: translateY(-100%);
+        }
+
+        /* Ajuste do Banner e Logo */
         .banner { width: 100%; height: 160px; background: #333 url('https://i.imgur.com/S5bk7ui.jpeg') center/cover; }
+        .logo-circle { width: 90px; height: 90px; background: #111; border-radius: 50%; margin: -45px auto 10px; border: 4px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; z-index: 2; }
         
-        .logo-circle { width: 90px; height: 90px; background: #111; border-radius: 50%; margin: -45px auto 10px; border: 4px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .info-bar { display: flex; justify-content: center; gap: 20px; font-size: 13px; color: #666; margin-top: 5px; }
+        .info-bar { display: flex; justify-content: center; gap: 20px; font-size: 13px; color: #666; margin-top: 5px; padding-bottom: 10px; }
         .status-open { color: #2ecc71; font-weight: 600; display: flex; align-items: center; gap: 5px; }
         .dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; }
 
+        /* Ajuste do Corpo para não ficar atrás do header fixo */
+        /* O Javascript vai calcular o tamanho exato disso automaticamente */
+        #spacer-header {
+            height: 380px; /* Altura inicial aproximada */
+            width: 100%;
+            display: block;
+        }
+
         /* BUSCA E CATEGORIAS */
         .search-container { padding: 15px; background: white; margin-top: 1px; }
-        .search-input { width: 100%; padding: 12px 15px; background: #f0f2f5; border: none; border-radius: 8px; outline: none; font-size: 14px; }
+        .search-input { 
+    width: 100%; 
+    padding: 12px 15px; 
+    background: #f0f2f5; 
+    border: none; 
+    border-radius: 8px; 
+    outline: none; 
+    font-size: 16px; /* 16px impede o iPhone de dar zoom */
+}
         
         .carousel { display: flex; overflow-x: auto; gap: 12px; padding: 10px 15px 20px; scrollbar-width: none; background: white; }
         .cat-item { min-width: 100px; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; padding-bottom: 10px; cursor: pointer; transition: transform 0.1s; }
@@ -98,7 +127,15 @@
         .cart-summary-total { display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; margin-top: 15px; color: #2ecc71; }
         
         .form-label { display: block; font-weight: 600; font-size: 13px; margin: 15px 0 5px; color: #555; }
-        .form-input, .form-select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; outline: none; margin-bottom: 5px; background: #fff; }
+        .form-input, .form-select { 
+    width: 100%; 
+    padding: 12px 15px; 
+    background: #f0f2f5; 
+    border: none; 
+    border-radius: 8px; 
+    outline: none; 
+    font-size: 16px; /* 16px impede o iPhone de dar zoom */
+}
         .form-input:disabled { background: #eee; color: #777; }
         .form-input:focus { border-color: #ea1d2c; }
         .form-row { display: flex; gap: 10px; }
@@ -106,59 +143,7 @@
         .pix-box { background: #e8f5e9; border: 1px solid #2ecc71; color: #1b5e20; padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-whatsapp { background-color: #25D366; width: 100%; padding: 15px; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-whatsapp:hover { background-color: #1ebc57; }
-		/* --- EFEITO DE RECOLHER O HEADER (ATUALIZADO) --- */
 
-/* 1. Define a animação suave para todos os elementos que vão sumir */
-.header-container, .banner, .logo-circle, h2, .info-bar, .carousel {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Curva mais fluida */
-}
-
-/* 2. Esconde o Banner */
-body.scrolled .banner {
-    height: 0;
-    opacity: 0;
-    margin: 0;
-}
-
-/* 3. Esconde a Logo */
-body.scrolled .logo-circle {
-    width: 0;
-    height: 0;
-    opacity: 0;
-    margin: 0;
-    border: 0;
-    padding: 0;
-}
-
-/* 4. Esconde o Título (h2) e a Barra de Informações */
-body.scrolled h2, 
-body.scrolled .info-bar {
-    height: 0;
-    opacity: 0;
-    margin: 0;
-    font-size: 0;
-    overflow: hidden;
-}
-
-/* 5. NOVO: Esconde o Carrossel de Categorias também */
-body.scrolled .carousel {
-    height: 0;
-    opacity: 0;
-    padding: 0; /* Remove o padding para não sobrar espaço em branco */
-    margin: 0;
-}
-
-/* 6. Ajuste final na Busca para ela ficar fixa e bonita no topo */
-body.scrolled .search-container {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Sombra suave quando recolhido */
-}
-
-/* Dica extra de fluidez para a página toda */
-html {
-    scroll-behavior: smooth;
-}
 /* --- DESTAQUE PARA COMBOS --- */
 .card-destaque {
     border: 3px solid #ea1d2c; /* Borda inicial vermelha */
@@ -203,16 +188,16 @@ html {
 <body>
 
     <div class="header-container">
-        <div class="banner"></div>
-        <img src="https://scontent.fgig19-1.fna.fbcdn.net/v/t39.30808-6/484564906_1195719489223288_1151739292656455327_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=mQfncGwzwIoQ7kNvwGLxdry&_nc_oc=AdnMVEkzLsBhr7PT5xYz39v-bM8iY4nnTy_aXEGBXebZv4FWgiQI7VPAlP5ENpYySus&_nc_zt=23&_nc_ht=scontent.fgig19-1.fna&_nc_gid=KsCZ4WVoBTADTn14zrpggA&oh=00_Afk9PEQ0By-vLzuae2Vg4Q3AV48AqcBZaPemfU5CQzbwhw&oe=693AD498" class="logo-circle" alt="Cartoon Lanches">
-        
-        <h2 style="font-size: 20px; font-weight: 700; margin-top:10px;">Cartoon Lanches Delivery</h2>
-        <div class="info-bar">
-            <span>30-40 min • Entrega Grátis</span>
-            <span class="status-open"><div class="dot"></div> Aberto</span>
-        </div>
-        
-        <div class="search-container">
+        <div class="header-collapse">
+            <div class="banner"></div>
+            <img src="https://scontent.fgig19-1.fna.fbcdn.net/v/t39.30808-6/484564906_1195719489223288_1151739292656455327_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=mQfncGwzwIoQ7kNvwGLxdry&_nc_oc=AdnMVEkzLsBhr7PT5xYz39v-bM8iY4nnTy_aXEGBXebZv4FWgiQI7VPAlP5ENpYySus&_nc_zt=23&_nc_ht=scontent.fgig19-1.fna&_nc_gid=KsCZ4WVoBTADTn14zrpggA&oh=00_Afk9PEQ0By-vLzuae2Vg4Q3AV48AqcBZaPemfU5CQzbwhw&oe=693AD498" class="logo-circle" alt="Cartoon Lanches">
+            
+            <h2 style="font-size: 20px; font-weight: 700; margin-top:10px;">Cartoon Lanches Delivery</h2>
+            <div class="info-bar">
+                <span>30-40 min • Entrega Grátis</span>
+                <span class="status-open"><div class="dot"></div> Aberto</span>
+            </div> 
+        </div> <div class="search-container">
             <input type="text" id="campo-busca" class="search-input" placeholder="O que você quer comer hoje? 🔍">
         </div>
 
@@ -234,7 +219,8 @@ html {
                 <div class="cat-name">Bebidas</div>
             </div>
         </div>
-    </div>
+
+    </div> <div id="spacer-header"></div>
 
     <div id="main-menu" style="padding-top: 10px;">
         <p style="text-align:center; color:#999; margin-top:20px;">Carregando cardápio...</p>
@@ -386,7 +372,26 @@ html {
     }
 }
 
+// --- FUNÇÃO QUE FALTOU PARA A BUSCA FUNCIONAR ---
+        function renderizarListaSimples(lista) {
+            const container = document.getElementById('main-menu');
+            container.innerHTML = ""; // Limpa a tela
+            
+            if(lista.length === 0) {
+                container.innerHTML = '<p style="text-align:center; margin-top:20px; color:#999;">Nenhum produto encontrado.</p>';
+                return;
+            }
 
+            // Cria uma lista simples com os resultados
+            let html = '<div class="product-list" style="margin-top:10px;">';
+            lista.forEach(p => {
+                // Usa false para não destacar produtos na busca (fica mais limpo)
+                html += criarHtmlProduto(p, false); 
+            });
+            html += '</div>';
+            
+            container.innerHTML = html;
+        }
 
         // Substitua a função criarHtmlProduto por esta (agora aceita o parâmetro destaque):
 function criarHtmlProduto(p, destaque = false) {
@@ -588,14 +593,74 @@ function criarHtmlProduto(p, destaque = false) {
             }
         }
 
-        // --- DETECTAR ROLAGEM HEADER ---
+        // --- DETECTAR ROLAGEM HEADER (OTIMIZADO) ---
+// --- DETECTAR ROLAGEM HEADER (OTIMIZADO) ---
+const bodyEl = document.body;
+
+// --- SISTEMA DE SCROLL INTELIGENTE (Smart Header) ---
+        let ultimoScroll = 0;
+        const header = document.querySelector('.header-container');
+        const spacer = document.getElementById('spacer-header');
+
+        // Ajusta o espaçador automaticamente baseado no tamanho real do header
+        function ajustarEspacador() {
+            if(header && spacer) {
+                spacer.style.height = header.offsetHeight + 'px';
+            }
+        }
+        
+        // Ajusta ao carregar e se a tela girar
+        window.addEventListener('load', ajustarEspacador);
+        window.addEventListener('resize', ajustarEspacador);
+
         window.addEventListener('scroll', function() {
-            if (window.scrollY > 50) {
-                document.body.classList.add('scrolled');
+            const scrollAtual = window.pageYOffset || document.documentElement.scrollTop;
+            
+            // Se rolar para BAIXO e já tiver passado do topo
+            if (scrollAtual > ultimoScroll && scrollAtual > 50) {
+                // Esconde o header (move para cima)
+                header.classList.add('header-hidden');
             } else {
-                document.body.classList.remove('scrolled');
+                // Se rolar para CIMA, mostra o header
+                header.classList.remove('header-hidden');
+            }
+            
+            // Evita comportamentos estranhos no "bouncy scroll" do iPhone
+            ultimoScroll = scrollAtual <= 0 ? 0 : scrollAtual;
+        }, { passive: true }); // 'passive: true' melhora muito a performance no mobile
+		
+		// --- MELHORIA: FECHAR MODAL COM O BOTÃO VOLTAR (ANDROID) ---
+        
+        // Quando abrir o modal, adicionamos um estado no histórico
+        const originalAbrirModal = window.abrirModalProduto;
+        window.abrirModalProduto = async function(id) {
+            window.history.pushState({modal: true}, 'Modal Aberto'); // Cria um ponto no histórico
+            await originalAbrirModal(id);
+        }
+
+        // Quando o usuário apertar "Voltar"
+        window.addEventListener('popstate', function(event) {
+            const modalProduto = document.getElementById('product-modal');
+            const modalCheckout = document.getElementById('checkout-modal');
+            
+            // Se algum modal estiver visível, fechamos ele visualmente
+            if (modalProduto.style.display === 'flex') {
+                modalProduto.style.display = 'none';
+            }
+            if (modalCheckout.style.display === 'flex') {
+                modalCheckout.style.display = 'none';
             }
         });
+
+        // Atualiza a função de fechar manual para também voltar o histórico
+        const originalFecharModal = window.fecharModalProduto;
+        window.fecharModalProduto = function() {
+            originalFecharModal();
+            // Volta o histórico se ele foi criado pelo modal
+            if(history.state && history.state.modal) {
+                window.history.back();
+            }
+        }
 
         carregar();
     </script>
