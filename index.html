@@ -11,7 +11,8 @@
         /* --- ESTILOS GERAIS --- */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         
-        body { background-color: #ffffff; padding-bottom: 100px; color: #333; -webkit-tap-highlight-color: transparent; }
+        /* Padding-bottom 0 para o rodapé encostar no final */
+body { background-color: #ffffff; padding-bottom: 0; color: #333; -webkit-tap-highlight-color: transparent; }
 
         /* --- HEADER OTIMIZADO (GPU) --- */
         .header-container { 
@@ -183,6 +184,29 @@
     z-index: 10;
 }
 
+/* --- RODAPÉ (COPYRIGHT) --- */
+        .footer-legal {
+            text-align: center;
+            background-color: #f8f9fa; /* Cinza bem clarinho profissional */
+            border-top: 1px solid #eaeaea;
+            padding: 10px 5px 10px; /* 120px embaixo para não ficar atrás do carrinho */
+            margin-top: 5px;
+            color: #888;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .footer-legal strong {
+            color: #333;
+            font-weight: 700;
+        }
+        
+        .footer-cnpj {
+            margin-top: 5px;
+            font-size: 11px;
+            color: #aaa;
+        }
+
     </style>
 </head>
 <body>
@@ -226,7 +250,11 @@
         <p style="text-align:center; color:#999; margin-top:20px;">Carregando cardápio...</p>
     </div>
     
-    <div style="height: 80px;"></div>
+    <footer class="footer-legal">
+        <p>&copy; <span id="ano-atual"></span> <strong>Cartoon Lanches Delivery</strong></p>
+        <p>Todos os direitos reservados.</p>
+
+    <div class="floating-cart" id="cart-bar" onclick="abrirCheckout()">
 
     <div class="floating-cart" id="cart-bar" onclick="abrirCheckout()">
         <div class="cart-info"><span id="cart-count">0 itens</span><span class="cart-total" id="cart-price">R$ 0,00</span></div>
@@ -292,6 +320,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js";
+		
+		// Atualiza o ano no rodapé automaticamente
+document.getElementById('ano-atual').innerText = new Date().getFullYear();
 
         // --- SUAS NOVAS CHAVES DO PROJETO CARTOON ---
         const firebaseConfig = {
