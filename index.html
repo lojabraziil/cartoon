@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cartoon Lanches - Delivery</title>
+	<link rel="icon" href="https://scontent.fgig19-1.fna.fbcdn.net/v/t39.30808-6/484564906_1195719489223288_1151739292656455327_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=mQfncGwzwIoQ7kNvwGLxdry&_nc_oc=AdnMVEkzLsBhr7PT5xYz39v-bM8iY4nnTy_aXEGBXebZv4FWgiQI7VPAlP5ENpYySus&_nc_zt=23&_nc_ht=scontent.fgig19-1.fna&_nc_gid=KsCZ4WVoBTADTn14zrpggA&oh=00_Afk9PEQ0By-vLzuae2Vg4Q3AV48AqcBZaPemfU5CQzbwhw&oe=693AD498" type="image/jpeg">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -226,14 +227,25 @@
         <p style="text-align:center; color:#999; margin-top:20px;">Carregando cardápio...</p>
     </div>
     
-    <footer class="footer-legal">
-        <p>&copy; <span id="ano-atual"></span> <strong>Cartoon Lanches Delivery</strong></p>
-        <p>Todos os direitos reservados.</p>
-        <p style="margin-top: 15px;">
-            <span style="opacity:0.6">Segurança e Tecnologia</span><br>
-            🔒 Site Seguro
-        </p>
-    </footer>
+    
+     <footer class="footer-legal">
+    <div style="margin-bottom: 20px;">
+        <h4 style="color: #333; margin-bottom: 10px;">Cartoon Lanches</h4>
+        <p>Rua Licania, 22 - Anil - Jacarepagua, Rio de Janeiro - RJ</p>
+        <p>CNPJ: 35.446.794/0001-04  </p>
+    </div>
+    
+    <div style="margin-bottom: 20px;">
+        <h4 style="color: #333; margin-bottom: 10px;">Horário de Atendimento</h4>
+        <p>Terça a Domingo: 18:00 às 02:30</p>
+   
+    </div>
+
+    <hr style="margin: 20px auto; width: 50%; opacity: 0.3;">
+
+    <p>&copy; <span id="ano-atual"></span> <strong>Cartoon Lanches Delivery</strong></p>
+    <p style="font-size: 11px; margin-top: 5px;">Desenvolvido com tecnologia segura 🔒</p>
+</footer>
 
     <div class="floating-cart" id="cart-bar" onclick="abrirCheckout()">
         <div class="cart-info"><span id="cart-count">0 itens</span><span class="cart-total" id="cart-price">R$ 0,00</span></div>
@@ -295,9 +307,16 @@
                 <label class="form-label">Cidade:</label><input type="text" id="cliente-cidade" class="form-input" disabled>
                 <label class="form-label">Complemento:</label><input type="text" id="cliente-comp" class="form-input" placeholder="Ex: Apt 101">
                 <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
-                <h3 style="font-size: 16px; margin-bottom:10px;">Pagamento</h3>
-                <div class="pix-box"><img src="https://artpoin.com/wp-content/uploads/2023/09/artpoin-logo-pix-724x1024.png" width="60"><span>Pagamento via PIX</span></div>
-            </div>
+                <h3 style="font-size: 16px; margin-bottom:10px;">Forma de Pagamento</h3>
+<div class="pix-box" style="flex-direction: column; text-align: left; align-items: flex-start; gap: 5px;">
+    <div style="display:flex; align-items:center; gap:10px; width:100%; justify-content:center; margin-bottom:5px;">
+        <img src="https://artpoin.com/wp-content/uploads/2023/09/artpoin-logo-pix-724x1024.png" width="25">
+        <span style="font-size:15px;">Pagamento via PIX</span>
+    </div>
+    <p style="font-size: 12px; font-weight: 400; color: #555; text-align: center; width: 100%;">
+        A chave PIX será enviada no WhatsApp após a confirmação do pedido. Você envia o comprovante por lá mesmo! 😉
+    </p>
+</div>
             <div class="modal-footer">
                 <button class="btn-whatsapp" onclick="enviarPedidoWhatsapp()"><span>Finalizar Pedido</span><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="20"></button>
             </div>
