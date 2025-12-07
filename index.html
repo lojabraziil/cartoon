@@ -647,18 +647,22 @@ const bodyEl = document.body;
         window.addEventListener('scroll', function() {
             const scrollAtual = window.pageYOffset || document.documentElement.scrollTop;
             
-            // Se rolar para BAIXO e já tiver passado do topo
-            if (scrollAtual > ultimoScroll && scrollAtual > 50) {
-                // Esconde o header (move para cima)
-                header.classList.add('header-hidden');
-            } else {
-                // Se rolar para CIMA, mostra o header
+            // LÓGICA NOVA:
+            
+            // 1. Se chegou no topo (menos de 20px), MOSTRA o menu
+            if (scrollAtual < 20) {
                 header.classList.remove('header-hidden');
+            } 
+            // 2. Se rolou para baixo (passou de 100px) e está descendo, ESCONDE
+            else if (scrollAtual > 100 && scrollAtual > ultimoScroll) {
+                header.classList.add('header-hidden');
             }
             
-            // Evita comportamentos estranhos no "bouncy scroll" do iPhone
+            // Se ele estiver rolando para cima (ex: do meio da página),
+            // ele não entra em nenhum dos 'if' acima, mantendo o menu escondido.
+
             ultimoScroll = scrollAtual <= 0 ? 0 : scrollAtual;
-        }, { passive: true }); // 'passive: true' melhora muito a performance no mobile
+        }, { passive: true });
 		
 		// --- MELHORIA: FECHAR MODAL COM O BOTÃO VOLTAR (ANDROID) ---
         
