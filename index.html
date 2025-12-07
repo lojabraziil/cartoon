@@ -277,11 +277,19 @@
                 
                 <h3 style="font-size: 16px; margin-bottom:10px;">Onde entregar?</h3>
                 <label class="form-label">Seu Nome:</label>
-                <input type="text" id="cliente-nome" class="form-input" placeholder="Ex: João Silva">
-                <div class="form-row">
-                    <div style="flex: 1;"><label class="form-label">CEP:</label><input type="tel" id="cliente-cep" class="form-input" placeholder="00000-000" onblur="buscarCep()" maxlength="9"></div>
-                    <div style="width: 80px;"><label class="form-label">Número:</label><input type="tel" id="cliente-numero" class="form-input" placeholder="Nº"></div>
-                </div>
+					<input type="text" id="cliente-nome" class="form-input" placeholder="Ex: João Silva">
+
+					<div class="form-row">
+						<div style="flex: 1;"> 
+							<label class="form-label">CEP:</label>
+							<input type="tel" id="cliente-cep" class="form-input" placeholder="00000-000" oninput="mascaraCep(this)" onblur="buscarCep()" maxlength="9">
+						</div>
+						
+						<div style="width: 90px;">
+							<label class="form-label">Número:</label>
+							<input type="tel" id="cliente-numero" class="form-input" placeholder="Nº">
+						</div>
+					</div>
                 <label class="form-label">Rua:</label><input type="text" id="cliente-rua" class="form-input" disabled>
                 <label class="form-label">Bairro:</label><input type="text" id="cliente-bairro" class="form-input" disabled>
                 <label class="form-label">Cidade:</label><input type="text" id="cliente-cidade" class="form-input" disabled>
@@ -512,9 +520,31 @@
             fecharModalProduto();
         }
 
+		// --- MÁSCARA DE CEP ---
+        window.mascaraCep = function(input) {
+            let valor = input.value;
+            
+            // Remove letras
+            valor = valor.replace(/\D/g, "");
+
+            // Coloca o traço
+            valor = valor.replace(/^(\d{5})(\d)/, "$1-$2");
+            
+            // Atualiza o campo
+            input.value = valor;
+
+            // NOVA LINHA: Se tiver 8 números, busca o endereço automaticamente!
+            if (valor.replace(/\D/g, '').length === 8) {
+                buscarCep();
+            }
+        }
+
         window.buscarCep = async function() {
             let cep = document.getElementById('cliente-cep').value.replace(/\D/g, '');
-            if(cep.length === 8) {
+            
+            // TROQUE O 5 PELO 8 AQUI EMBAIXO:
+            if(cep.length === 8) { 
+                
                 document.getElementById('cliente-rua').value = "Buscando...";
                 try {
                     const r = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
@@ -523,9 +553,19 @@
                         document.getElementById('cliente-rua').value = d.logradouro;
                         document.getElementById('cliente-bairro').value = d.bairro;
                         document.getElementById('cliente-cidade').value = `${d.localidade}-${d.uf}`;
-                        document.getElementById('cliente-numero').focus();
-                    } else { alert("CEP não encontrado!"); }
-                } catch(e) { alert("Erro CEP"); }
+                        
+                        // Esta linha é importante para melhorar a experiência no celular:
+                        document.getElementById('cliente-numero').focus(); 
+                    } else { 
+                        alert("CEP não encontrado!"); 
+                        // Limpa os campos se der erro
+                        document.getElementById('cliente-rua').value = "";
+                        document.getElementById('cliente-bairro').value = "";
+                        document.getElementById('cliente-cidade').value = "";
+                    }
+                } catch(e) { 
+                    alert("Erro ao buscar CEP. Verifique sua internet."); 
+                }
             }
         }
 
