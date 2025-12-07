@@ -17,22 +17,44 @@
         .header-container { 
             background: white; 
             text-align: center; 
-            padding-bottom: 15px; 
+            padding-bottom: 0; /* Ajustado para 0 para o search colar melhor */
             box-shadow: 0 1px 5px rgba(0,0,0,0.05); 
-            position: sticky; /* Faz o header fixar */
+            position: sticky; 
             top: 0; 
-            z-index: 100; /* Garante que fique acima de tudo */
+            z-index: 100; 
         }
+
+        /* --- OTIMIZAÇÃO ANDROID (CONTAINER RETRÁTIL) --- */
+        /* Agrupa tudo que deve sumir para animar apenas 1 elemento */
+        .header-collapse {
+            max-height: 400px; /* Altura suficiente para caber tudo aberto */
+            opacity: 1;
+            overflow: hidden;
+            transform: translateZ(0); /* Força aceleração de Hardware (GPU) */
+            will-change: max-height, opacity; /* Avisa o navegador que vai mudar */
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+        }
+
+        /* Quando a classe .scrolled é adicionada ao body */
+        body.scrolled .header-collapse {
+            max-height: 0;
+            opacity: 0;
+        }
+
+        /* Ajustes visuais dos itens internos */
+        .banner { width: 100%; height: 160px; background: #333 url('https://i.imgur.com/PNz8x87.jpeg') center/cover; }
         
-        .banner { width: 100%; height: 160px; background: #333 url('https://i.imgur.com/S5bk7ui.jpeg') center/cover; }
+        .logo-circle { width: 90px; height: 90px; background: #111; border-radius: 50%; margin: -45px auto 10px; border: 4px solid white; display: block; object-fit: cover; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         
-        .logo-circle { width: 90px; height: 90px; background: #111; border-radius: 50%; margin: -45px auto 10px; border: 4px solid white; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 14px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .info-bar { display: flex; justify-content: center; gap: 20px; font-size: 13px; color: #666; margin-top: 5px; }
+        .info-bar { display: flex; justify-content: center; gap: 20px; font-size: 13px; color: #666; margin-top: 5px; margin-bottom: 15px; }
         .status-open { color: #2ecc71; font-weight: 600; display: flex; align-items: center; gap: 5px; }
         .dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; }
 
         /* BUSCA E CATEGORIAS */
-        .search-container { padding: 15px; background: white; margin-top: 1px; }
+        .search-container { padding: 15px; background: white; transition: padding 0.3s ease; }
+        /* Quando rolar, dá um respiro no topo para a busca não colar no teto do celular */
+        body.scrolled .search-container { padding-top: 10px; border-bottom: 1px solid #f5f5f5; }
+
         .search-input { width: 100%; padding: 12px 15px; background: #f0f2f5; border: none; border-radius: 8px; outline: none; font-size: 14px; }
         
         .carousel { display: flex; overflow-x: auto; gap: 12px; padding: 10px 15px 20px; scrollbar-width: none; background: white; }
@@ -47,7 +69,6 @@
         .category-separator { 
             padding: 20px 15px 5px; font-size: 20px; font-weight: 800; color: #222; 
             margin-top: 10px; border-left: 5px solid #ea1d2c; line-height: 1; 
-            /* scroll-margin-top ajuda no CSS puro, mas vamos usar JS para garantir */
         }
         
         .product-list { padding: 0 15px 15px; display: flex; flex-direction: column; gap: 15px; }
@@ -106,110 +127,21 @@
         .pix-box { background: #e8f5e9; border: 1px solid #2ecc71; color: #1b5e20; padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-whatsapp { background-color: #25D366; width: 100%; padding: 15px; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-whatsapp:hover { background-color: #1ebc57; }
-		/* --- EFEITO DE RECOLHER O HEADER (ATUALIZADO) --- */
-
-/* 1. Define a animação suave para todos os elementos que vão sumir */
-.header-container, .banner, .logo-circle, h2, .info-bar, .carousel {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Curva mais fluida */
-}
-
-/* 2. Esconde o Banner */
-body.scrolled .banner {
-    height: 0;
-    opacity: 0;
-    margin: 0;
-}
-
-/* 3. Esconde a Logo */
-body.scrolled .logo-circle {
-    width: 0;
-    height: 0;
-    opacity: 0;
-    margin: 0;
-    border: 0;
-    padding: 0;
-}
-
-/* 4. Esconde o Título (h2) e a Barra de Informações */
-body.scrolled h2, 
-body.scrolled .info-bar {
-    height: 0;
-    opacity: 0;
-    margin: 0;
-    font-size: 0;
-    overflow: hidden;
-}
-
-/* 5. NOVO: Esconde o Carrossel de Categorias também */
-body.scrolled .carousel {
-    height: 0;
-    opacity: 0;
-    padding: 0; /* Remove o padding para não sobrar espaço em branco */
-    margin: 0;
-}
-
-/* 6. Ajuste final na Busca para ela ficar fixa e bonita no topo */
-body.scrolled .search-container {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Sombra suave quando recolhido */
-}
-
-/* Dica extra de fluidez para a página toda */
-html {
-    scroll-behavior: smooth;
-}
-/* --- DESTAQUE PARA COMBOS --- */
-.card-destaque {
-    border: 3px solid #ea1d2c; /* Borda inicial vermelha */
-    background: #fff5f5; /* Fundo levemente avermelhado para destacar */
-    position: relative;
-    z-index: 1;
-    animation: pulsarPromo 1.5s infinite alternate; /* Animação infinita */
-}
-
-/* Cria o efeito de brilho e pulso */
-@keyframes pulsarPromo {
-    0% {
-        box-shadow: 0 0 5px rgba(234, 29, 44, 0.4);
-        border-color: #ea1d2c;
-        transform: scale(1);
-    }
-    100% {
-        box-shadow: 0 0 20px rgba(255, 165, 0, 0.8); /* Brilho Laranja forte */
-        border-color: #f1c40f; /* Borda fica Dourada */
-        transform: scale(1.02); /* Aumenta um pouquinho o tamanho */
-    }
-}
-
-/* Adiciona uma etiqueta "OFERTA" (Opcional, mas fica legal) */
-.card-destaque::before {
-    content: "🔥 PROMOÇÃO";
-    position: absolute;
-    top: -12px;
-    right: 10px;
-    background: #f1c40f;
-    color: #ea1d2c;
-    font-size: 10px;
-    font-weight: 800;
-    padding: 2px 8px;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    z-index: 10;
-}
-
     </style>
 </head>
 <body>
 
     <div class="header-container">
-        <div class="banner"></div>
-        <img src="https://scontent.fgig19-1.fna.fbcdn.net/v/t39.30808-6/484564906_1195719489223288_1151739292656455327_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=mQfncGwzwIoQ7kNvwGLxdry&_nc_oc=AdnMVEkzLsBhr7PT5xYz39v-bM8iY4nnTy_aXEGBXebZv4FWgiQI7VPAlP5ENpYySus&_nc_zt=23&_nc_ht=scontent.fgig19-1.fna&_nc_gid=KsCZ4WVoBTADTn14zrpggA&oh=00_Afk9PEQ0By-vLzuae2Vg4Q3AV48AqcBZaPemfU5CQzbwhw&oe=693AD498" class="logo-circle" alt="Cartoon Lanches">
         
-        <h2 style="font-size: 20px; font-weight: 700; margin-top:10px;">Cartoon Lanches Delivery</h2>
-        <div class="info-bar">
-            <span>30-40 min • Entrega Grátis</span>
-            <span class="status-open"><div class="dot"></div> Aberto</span>
+        <div class="header-collapse">
+            <div class="banner"></div>
+            <img src="https://scontent.fgig19-1.fna.fbcdn.net/v/t39.30808-6/484564906_1195719489223288_1151739292656455327_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=mQfncGwzwIoQ7kNvwGLxdry&_nc_oc=AdnMVEkzLsBhr7PT5xYz39v-bM8iY4nnTy_aXEGBXebZv4FWgiQI7VPAlP5ENpYySus&_nc_zt=23&_nc_ht=scontent.fgig19-1.fna&_nc_gid=KsCZ4WVoBTADTn14zrpggA&oh=00_Afk9PEQ0By-vLzuae2Vg4Q3AV48AqcBZaPemfU5CQzbwhw&oe=693AD498" class="logo-circle" alt="Cartoon Lanches">
+            
+            <h2 style="font-size: 20px; font-weight: 700; margin-top:10px;">Cartoon Lanches Delivery</h2>
+            <div class="info-bar">
+                <span>30-40 min • Entrega Grátis</span>
+                <span class="status-open"><div class="dot"></div> Aberto</span>
+            </div>
         </div>
         
         <div class="search-container">
@@ -354,58 +286,55 @@ html {
         });
 
         function renderizarPorCategoria(lista) {
-    const container = document.getElementById('main-menu');
-    container.innerHTML = "";
-    
-    const ordem = ["Combos Promocionais", "Hamburguer", "Batata", "Refrigerante"];
-    
-    ordem.forEach(cat => {
-        const itens = lista.filter(p => p.categoria === cat);
-        
-        if (itens.length > 0) {
-            container.innerHTML += `<div class="category-separator" id="cat-${cat}">${cat}</div>`;
-            let listaHtml = `<div class="product-list">`;
+            const container = document.getElementById('main-menu');
+            container.innerHTML = "";
             
-            // VERIFICA SE É A CATEGORIA DE COMBOS PARA ATIVAR O DESTAQUE
-            const ehCombo = (cat === "Combos Promocionais");
-
-            itens.forEach(p => { 
-                listaHtml += criarHtmlProduto(p, ehCombo); 
+            const ordem = ["Combos Promocionais", "Hamburguer", "Batata", "Refrigerante"];
+            
+            ordem.forEach(cat => {
+                const itens = lista.filter(p => p.categoria === cat);
+                if (itens.length > 0) {
+                    container.innerHTML += `<div class="category-separator" id="cat-${cat}">${cat}</div>`;
+                    let listaHtml = `<div class="product-list">`;
+                    itens.forEach(p => { listaHtml += criarHtmlProduto(p); });
+                    listaHtml += `</div>`;
+                    container.innerHTML += listaHtml;
+                }
             });
-            
-            listaHtml += `</div>`;
-            container.innerHTML += listaHtml;
+
+            const outros = lista.filter(p => !ordem.includes(p.categoria));
+            if (outros.length > 0) {
+                container.innerHTML += `<div class="category-separator" id="cat-Outros">Outros</div><div class="product-list">`;
+                outros.forEach(p => { container.innerHTML += criarHtmlProduto(p); });
+                container.innerHTML += `</div>`;
+            }
         }
-    });
 
-    const outros = lista.filter(p => !ordem.includes(p.categoria));
-    if (outros.length > 0) {
-        container.innerHTML += `<div class="category-separator" id="cat-Outros">Outros</div><div class="product-list">`;
-        outros.forEach(p => { container.innerHTML += criarHtmlProduto(p, false); });
-        container.innerHTML += `</div>`;
-    }
-}
+        function renderizarListaSimples(lista) {
+            const container = document.getElementById('main-menu');
+            container.innerHTML = `<div class="product-list" style="padding-top:15px;">`;
+            if(lista.length === 0) {
+                container.innerHTML += `<p style="text-align:center; color:#999;">Nada encontrado.</p>`;
+            } else {
+                lista.forEach(p => { container.innerHTML += criarHtmlProduto(p); });
+            }
+            container.innerHTML += `</div>`;
+        }
 
-
-
-        // Substitua a função criarHtmlProduto por esta (agora aceita o parâmetro destaque):
-function criarHtmlProduto(p, destaque = false) {
-    // Se destaque for verdadeiro, adiciona a classe 'card-destaque'
-    const classeExtra = destaque ? 'card-destaque' : '';
-    
-    return `
-        <div class="product-item ${classeExtra}" onclick="abrirModalProduto('${p.id}')">
-            <div class="item-info">
-                <div class="item-name">${p.nome}</div>
-                <div class="item-desc">${p.descricao||''}</div>
-                <div class="item-price">R$ ${parseFloat(p.preco).toFixed(2).replace('.', ',')}</div>
-            </div>
-            <div class="item-img-box">
-                <img src="${p.foto||'https://placehold.co/100'}" class="item-img">
-                <button class="btn-add-mini">+</button>
-            </div>
-        </div>`;
-}
+        function criarHtmlProduto(p) {
+            return `
+                <div class="product-item" onclick="abrirModalProduto('${p.id}')">
+                    <div class="item-info">
+                        <div class="item-name">${p.nome}</div>
+                        <div class="item-desc">${p.descricao||''}</div>
+                        <div class="item-price">R$ ${parseFloat(p.preco).toFixed(2).replace('.', ',')}</div>
+                    </div>
+                    <div class="item-img-box">
+                        <img src="${p.foto||'https://placehold.co/100'}" class="item-img">
+                        <button class="btn-add-mini">+</button>
+                    </div>
+                </div>`;
+        }
 
         // --- SISTEMA CARRINHO ---
         function atualizarCarrinhoUI() {
@@ -588,13 +517,25 @@ function criarHtmlProduto(p, destaque = false) {
             }
         }
 
-        // --- DETECTAR ROLAGEM HEADER ---
+        // --- DETECTAR ROLAGEM HEADER OTIMIZADO (ANDROID FIX) ---
+        let lastScrollTop = 0;
+        const bodyEl = document.body;
+
         window.addEventListener('scroll', function() {
-            if (window.scrollY > 50) {
-                document.body.classList.add('scrolled');
-            } else {
-                document.body.classList.remove('scrolled');
-            }
+            // requestAnimationFrame evita que o celular trave tentando calcular pixel por pixel
+            window.requestAnimationFrame(function() {
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                
+                if (scrollTop > 50) {
+                    if (!bodyEl.classList.contains('scrolled')) {
+                        bodyEl.classList.add('scrolled');
+                    }
+                } else {
+                    if (bodyEl.classList.contains('scrolled')) {
+                        bodyEl.classList.remove('scrolled');
+                    }
+                }
+            });
         });
 
         carregar();
