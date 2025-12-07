@@ -106,11 +106,11 @@
         .pix-box { background: #e8f5e9; border: 1px solid #2ecc71; color: #1b5e20; padding: 15px; border-radius: 8px; font-weight: bold; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-whatsapp { background-color: #25D366; width: 100%; padding: 15px; color: white; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn-whatsapp:hover { background-color: #1ebc57; }
-		/* --- EFEITO DE RECOLHER O HEADER --- */
+		/* --- EFEITO DE RECOLHER O HEADER (ATUALIZADO) --- */
 
-/* 1. Define que a mudança será suave (animação) */
-.header-container, .banner, .logo-circle, .header-title, .info-bar {
-    transition: all 0.3s ease-in-out;
+/* 1. Define a animação suave para todos os elementos que vão sumir */
+.header-container, .banner, .logo-circle, h2, .info-bar, .carousel {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Curva mais fluida */
 }
 
 /* 2. Esconde o Banner */
@@ -127,21 +127,75 @@ body.scrolled .logo-circle {
     opacity: 0;
     margin: 0;
     border: 0;
+    padding: 0;
 }
 
-/* 4. Esconde o Título e as Informações */
-body.scrolled .header-title, 
+/* 4. Esconde o Título (h2) e a Barra de Informações */
+body.scrolled h2, 
 body.scrolled .info-bar {
     height: 0;
     opacity: 0;
     margin: 0;
-    font-size: 0; /* Garante que o texto suma completamente */
+    font-size: 0;
     overflow: hidden;
 }
 
-/* 5. Ajuste fino na barra de busca para não ficar colada no teto */
+/* 5. NOVO: Esconde o Carrossel de Categorias também */
+body.scrolled .carousel {
+    height: 0;
+    opacity: 0;
+    padding: 0; /* Remove o padding para não sobrar espaço em branco */
+    margin: 0;
+}
+
+/* 6. Ajuste final na Busca para ela ficar fixa e bonita no topo */
 body.scrolled .search-container {
-    padding-top: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Sombra suave quando recolhido */
+}
+
+/* Dica extra de fluidez para a página toda */
+html {
+    scroll-behavior: smooth;
+}
+/* --- DESTAQUE PARA COMBOS --- */
+.card-destaque {
+    border: 3px solid #ea1d2c; /* Borda inicial vermelha */
+    background: #fff5f5; /* Fundo levemente avermelhado para destacar */
+    position: relative;
+    z-index: 1;
+    animation: pulsarPromo 1.5s infinite alternate; /* Animação infinita */
+}
+
+/* Cria o efeito de brilho e pulso */
+@keyframes pulsarPromo {
+    0% {
+        box-shadow: 0 0 5px rgba(234, 29, 44, 0.4);
+        border-color: #ea1d2c;
+        transform: scale(1);
+    }
+    100% {
+        box-shadow: 0 0 20px rgba(255, 165, 0, 0.8); /* Brilho Laranja forte */
+        border-color: #f1c40f; /* Borda fica Dourada */
+        transform: scale(1.02); /* Aumenta um pouquinho o tamanho */
+    }
+}
+
+/* Adiciona uma etiqueta "OFERTA" (Opcional, mas fica legal) */
+.card-destaque::before {
+    content: "🔥 PROMOÇÃO";
+    position: absolute;
+    top: -12px;
+    right: 10px;
+    background: #f1c40f;
+    color: #ea1d2c;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 10;
 }
 
     </style>
@@ -300,55 +354,58 @@ body.scrolled .search-container {
         });
 
         function renderizarPorCategoria(lista) {
-            const container = document.getElementById('main-menu');
-            container.innerHTML = "";
+    const container = document.getElementById('main-menu');
+    container.innerHTML = "";
+    
+    const ordem = ["Combos Promocionais", "Hamburguer", "Batata", "Refrigerante"];
+    
+    ordem.forEach(cat => {
+        const itens = lista.filter(p => p.categoria === cat);
+        
+        if (itens.length > 0) {
+            container.innerHTML += `<div class="category-separator" id="cat-${cat}">${cat}</div>`;
+            let listaHtml = `<div class="product-list">`;
             
-            const ordem = ["Combos Promocionais", "Hamburguer", "Batata", "Refrigerante"];
-            
-            ordem.forEach(cat => {
-                const itens = lista.filter(p => p.categoria === cat);
-                if (itens.length > 0) {
-                    container.innerHTML += `<div class="category-separator" id="cat-${cat}">${cat}</div>`;
-                    let listaHtml = `<div class="product-list">`;
-                    itens.forEach(p => { listaHtml += criarHtmlProduto(p); });
-                    listaHtml += `</div>`;
-                    container.innerHTML += listaHtml;
-                }
+            // VERIFICA SE É A CATEGORIA DE COMBOS PARA ATIVAR O DESTAQUE
+            const ehCombo = (cat === "Combos Promocionais");
+
+            itens.forEach(p => { 
+                listaHtml += criarHtmlProduto(p, ehCombo); 
             });
-
-            const outros = lista.filter(p => !ordem.includes(p.categoria));
-            if (outros.length > 0) {
-                container.innerHTML += `<div class="category-separator" id="cat-Outros">Outros</div><div class="product-list">`;
-                outros.forEach(p => { container.innerHTML += criarHtmlProduto(p); });
-                container.innerHTML += `</div>`;
-            }
+            
+            listaHtml += `</div>`;
+            container.innerHTML += listaHtml;
         }
+    });
 
-        function renderizarListaSimples(lista) {
-            const container = document.getElementById('main-menu');
-            container.innerHTML = `<div class="product-list" style="padding-top:15px;">`;
-            if(lista.length === 0) {
-                container.innerHTML += `<p style="text-align:center; color:#999;">Nada encontrado.</p>`;
-            } else {
-                lista.forEach(p => { container.innerHTML += criarHtmlProduto(p); });
-            }
-            container.innerHTML += `</div>`;
-        }
+    const outros = lista.filter(p => !ordem.includes(p.categoria));
+    if (outros.length > 0) {
+        container.innerHTML += `<div class="category-separator" id="cat-Outros">Outros</div><div class="product-list">`;
+        outros.forEach(p => { container.innerHTML += criarHtmlProduto(p, false); });
+        container.innerHTML += `</div>`;
+    }
+}
 
-        function criarHtmlProduto(p) {
-            return `
-                <div class="product-item" onclick="abrirModalProduto('${p.id}')">
-                    <div class="item-info">
-                        <div class="item-name">${p.nome}</div>
-                        <div class="item-desc">${p.descricao||''}</div>
-                        <div class="item-price">R$ ${parseFloat(p.preco).toFixed(2).replace('.', ',')}</div>
-                    </div>
-                    <div class="item-img-box">
-                        <img src="${p.foto||'https://placehold.co/100'}" class="item-img">
-                        <button class="btn-add-mini">+</button>
-                    </div>
-                </div>`;
-        }
+
+
+        // Substitua a função criarHtmlProduto por esta (agora aceita o parâmetro destaque):
+function criarHtmlProduto(p, destaque = false) {
+    // Se destaque for verdadeiro, adiciona a classe 'card-destaque'
+    const classeExtra = destaque ? 'card-destaque' : '';
+    
+    return `
+        <div class="product-item ${classeExtra}" onclick="abrirModalProduto('${p.id}')">
+            <div class="item-info">
+                <div class="item-name">${p.nome}</div>
+                <div class="item-desc">${p.descricao||''}</div>
+                <div class="item-price">R$ ${parseFloat(p.preco).toFixed(2).replace('.', ',')}</div>
+            </div>
+            <div class="item-img-box">
+                <img src="${p.foto||'https://placehold.co/100'}" class="item-img">
+                <button class="btn-add-mini">+</button>
+            </div>
+        </div>`;
+}
 
         // --- SISTEMA CARRINHO ---
         function atualizarCarrinhoUI() {
