@@ -27,6 +27,15 @@
         .btn-mini { padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 600; border: none; }
         .btn-edit { background: #e3f2fd; color: #1976d2; border: 1px solid #bbdefb; }
         .btn-delete { background: #fff0f0; color: #d32f2f; border: 1px solid #ffcccc; }
+
+        /* AREA DE BACKUP */
+        .backup-area { display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap; }
+        .btn-backup {
+            background-color: #27ae60; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-restore {
+            background-color: #2980b9; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -35,6 +44,14 @@
         <header>
             <h1>Painel Gerencial 🍔</h1>
             <p>Conectado ao novo banco: cartoon-56080</p>
+
+            <div class="backup-area">
+                <button class="btn-backup" onclick="fazerBackup()">⬇️ Baixar Backup</button>
+                
+                <input type="file" id="input-restore" accept=".json" style="display: none;" onchange="processarRestauracao(this)">
+                
+                <button class="btn-restore" onclick="document.getElementById('input-restore').click()">⬆️ Restaurar Backup</button>
+            </div>
         </header>
 
         <div class="card" id="form-card">
@@ -106,6 +123,83 @@
 
         let idParaEditar = null;
         let cacheProdutos = {};
+
+        // --- FUNÇÃO 1: BAIXAR BACKUP (DOWNLOAD) ---
+        window.fazerBackup = function() {
+            const listaParaSalvar = Object.values(cacheProdutos);
+            if (listaParaSalvar.length === 0) {
+                alert("Nenhum produto encontrado para salvar.");
+                return;
+            }
+            const dadosJSON = JSON.stringify(listaParaSalvar, null, 2);
+            const blob = new Blob([dadosJSON], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            const dataHoje = new Date().toISOString().split('T')[0];
+            a.download = `backup_jack_burguer_${dataHoje}.json`;
+            document.body.appendChild(a);
+            a.click(); 
+            document.body.removeChild(a); 
+            URL.revokeObjectURL(url); 
+        }
+
+        // --- FUNÇÃO 2: RESTAURAR BACKUP (UPLOAD) ---
+        window.processarRestauracao = function(inputElement) {
+            const file = inputElement.files[0];
+            if (!file) return;
+
+            if (!confirm("⚠️ ATENÇÃO:\nIsso vai adicionar todos os produtos do arquivo ao cardápio.\n\nSe já existirem produtos, eles podem ficar duplicados.\n\nDeseja continuar?")) {
+                inputElement.value = ''; 
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const conteudo = e.target.result;
+                    const produtosArray = JSON.parse(conteudo);
+
+                    if (!Array.isArray(produtosArray)) {
+                        throw new Error("O arquivo não é uma lista válida.");
+                    }
+
+                    let sucesso = 0;
+                    const btn = document.querySelector('.btn-restore');
+                    const textoOriginal = btn.innerText;
+                    btn.innerText = "⏳ Enviando...";
+                    btn.disabled = true;
+
+                    for (const p of produtosArray) {
+                        const novoItem = {
+                            nome: p.nome || 'Sem Nome',
+                            categoria: p.categoria || 'Hamburguer',
+                            descricao: p.descricao || '',
+                            preco: parseFloat(p.preco) || 0,
+                            foto: p.foto || '',
+                            opcoesString: p.opcoesString || ''
+                        };
+
+                        // Adiciona na coleção "produtos" (padrão desse painel)
+                        await addDoc(collection(db, "produtos"), novoItem);
+                        sucesso++;
+                    }
+
+                    alert(`Sucesso! ${sucesso} produtos restaurados.`);
+                    
+                    btn.innerText = textoOriginal;
+                    btn.disabled = false;
+                    inputElement.value = ''; 
+
+                } catch (err) {
+                    console.error(err);
+                    alert("Erro ao restaurar: " + err.message);
+                    document.querySelector('.btn-restore').innerText = "⬆️ Restaurar Backup";
+                    document.querySelector('.btn-restore').disabled = false;
+                }
+            };
+            reader.readAsText(file);
+        }
 
         window.salvarProduto = async function() {
             const btn = document.getElementById('btn-save');
